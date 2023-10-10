@@ -1,0 +1,6 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.0.1
+Date: 2023-10-10
+  Changes:
+    - Initial beta release
+    - Adds a combinator that outputs the position (X, Y) and surface (S) on which it's placed.

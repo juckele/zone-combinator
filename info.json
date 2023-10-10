@@ -1,0 +1,18 @@
+{
+  "name": "zone-combinator",
+  "version": "0.0.1",
+  "title": "Space Exploration Zone Combinator",
+  "author": "test447",
+  "contact": "https://github.com/daviscook477/zone-combinator/issues",
+  "factorio_version": "1.1",
+  "dependencies": [
+    "base",
+    "space-exploration"
+  ],
+  "description": "A combinator that outputs detailed information about the Space Exploration zone in which it is placed.",
+  "package": {
+    "git_publish_branch": "main",
+    "ignore": [".git", ".github", ".vscode", ".kakrc"],
+    "sync_portal_details":  true
+  }
+}
