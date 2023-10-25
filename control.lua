@@ -248,7 +248,8 @@ function update_zone_combinator(entity)
   -- local hazards = remote.call("space-exploration", "hazards_for_surface", {surface_index = surface_index})
   local hazards = get_hazards(zone)
   -- local solar = remote.call("space-exploration", "solar_for_surface", {surface_index = surface_index})
-  local solar = get_solar(zone)
+  -- local solar = get_solar(zone)
+  local solar = 1
 
   local index, signal = get_zone_signal(zone)
   local plagued = table_contains(hazards, "plague-world")
