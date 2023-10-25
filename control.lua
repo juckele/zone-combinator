@@ -46,13 +46,10 @@ function set_zone_combinator_signals(entity, params)
     table.insert(control_behavior_params, {index=index, signal={type="item", name="se-lifesupport-canister"}, count=1})
     index = index + 1
   end
-  if params.primary_resource then
+  if params.fragment_name then
     local type = "item"
-    if game.item_prototypes[params.primary_resource] then
-      table.insert(control_behavior_params, {index=index, signal={type="item", name=params.primary_resource}, count=1})
-      index = index + 1
-    elseif game.fluid_prototypes[params.primary_resource] then
-      table.insert(control_behavior_params, {index=index, signal={type="fluid", name=params.primary_resource}, count=1})
+    if game.item_prototypes[params.fragment_name] then
+      table.insert(control_behavior_params, {index=index, signal={type="item", name=params.fragment_name}, count=1})
       index = index + 1
     end
   end
@@ -255,9 +252,9 @@ function update_zone_combinator(entity)
   local plagued = table_contains(hazards, "plague-world")
   local life_support = plagued or (zone.type ~= "moon" and zone.type ~= "planet") -- this probably will change in some future version of SE where some planets/moons don't just happen to all have breathable atmospheres
   local waterless = table_contains(hazards, "waterless") or (zone.type ~= "moon" and zone.type ~= "planet")
-  local primary_resource = nil
+  local fragment_name = nil
   if zone.type ~= "orbit" then
-    primary_resource = zone.primary_resource
+    fragment_name = zone.fragment_name
   end
 
   set_zone_combinator_signals(entity, {
@@ -268,7 +265,7 @@ function update_zone_combinator(entity)
     waterless = waterless,
     biter_meteors = table_contains(hazards, "biter-meteors"),
     plagued = plagued,
-    primary_resource = primary_resource,
+    fragment_name = fragment_name,
     robot_attrition = math.floor(robot_attrition * 100),
     index = index,
     signal = signal,
