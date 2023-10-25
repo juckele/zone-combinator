@@ -19,7 +19,7 @@ function set_zone_combinator_signals(entity, params)
     index = index + 1
   end
   if params.ticks_per_day then
-    table.insert(control_behavior_params, {index=index, signal={type="item", name="solar-panel"}, count=params.ticks_per_day})
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="day-length"}, count=params.ticks_per_day})
     index = index + 1
   end
   if params.threat then
