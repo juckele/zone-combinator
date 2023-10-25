@@ -67,15 +67,92 @@ function get_zone_signal(zone)
   return zone.index, string.sub(zone_icon, string.len(icon_prefix) + 1, string.len(zone_icon))
 end
 
+--------------------------------------------------------------
+-- BEGIN GET THREAT
+-- Remove when remote interface from SE is added.
+-- All code in this block derived from SE scripts/zone.lua.
+--------------------------------------------------------------
+local function enemy_base_setting_to_threat(enemy_base_setting)
+  return math.max(0, math.min(1, enemy_base_setting.size / 3))  -- 0-1
+end
+
+function get_threat(zone)
+  if is_solid(zone) then
+    if zone.is_homeworld and zone.surface_index then
+      local surface = get_surface(zone)
+      local mapgen = surface.map_gen_settings
+      if mapgen.autoplace_controls["enemy-base"] and mapgen.autoplace_controls["enemy-base"].size then
+        return enemy_base_setting_to_threat(mapgen.autoplace_controls["enemy-base"])
+      end
+    end
+    if zone.controls and zone.controls["enemy-base"] and zone.controls["enemy-base"].size then
+      local threat = enemy_base_setting_to_threat(zone.controls["enemy-base"])
+      if Zone.is_biter_meteors_hazard(zone) then
+        return math.max(threat, 0.01)
+      end
+      return threat
+    end
+  end
+  return 0
+end
+
+function get_surface(zone)
+  if zone.type == "spaceship" then
+    return Spaceship.get_current_surface(zone)
+  end
+  if zone.surface_index then
+    return game.get_surface(zone.surface_index)
+  end
+  return nil
+end
+
+function is_solid(zone)
+  return zone.type == "planet" or zone.type == "moon"
+end
+--------------------------------------------------------------
+-- END GET THREAT
+--------------------------------------------------------------
+
+--------------------------------------------------------------
+-- BEGIN GET HAZARDS
+-- Remove when remote interface from SE is added.
+-- All code in this block derived from SE scripts/zone.lua.
+--------------------------------------------------------------
+function get_hazards(zone)
+  local hazards = {}
+  if is_biter_meteors_hazard(zone) then
+    table.insert(hazards, "biter-meteors")
+  end
+  if zone.plague_used then
+    table.insert(hazards, "plague-world")
+  end
+  if zone.tags and table_contains(zone.tags, "water_none") then
+    table.insert(hazards, "waterless")
+  end
+  return hazards
+end
+
+function is_biter_meteors_hazard(zone)
+  return zone.controls and zone.controls["se-vitamelange"] and zone.controls["se-vitamelange"].richness > 0
+end
+--------------------------------------------------------------
+-- END GET HAZARDS
+--------------------------------------------------------------
+
+
 function update_zone_combinator(entity)
   -- compute and set the values for the combinator
   local surface_index = entity.surface.index
   local zone = remote.call("space-exploration", "get_zone_from_surface_index", {surface_index = surface_index})
   if not zone then return end
-
-  local threat = remote.call("space-exploration", "threat_for_surface", {surface_index = surface_index})
+  log("zone_information:" .. serpent.block(zone))
+  
+  -- TODO use remote calls when implemented:
+  -- local threat = remote.call("space-exploration", "threat_for_surface", {surface_index = surface_index})
+  local threat = get_threat(zone)
   local robot_attrition = remote.call("space-exploration", "robot_attrition_for_surface", {surface_index = surface_index})
-  local hazards = remote.call("space-exploration", "hazards_for_surface", {surface_index = surface_index})
+  -- local hazards = remote.call("space-exploration", "hazards_for_surface", {surface_index = surface_index})
+  local hazards = get_hazards(zone)
   local index, signal = get_zone_signal(zone)
   local plagued = table_contains(hazards, "plague-world")
   local life_support = plagued or (zone.type ~= "moon" and zone.type ~= "planet") -- this probably will change in some future version of SE where some planets/moons don't just happen to all have breathable atmospheres
