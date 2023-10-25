@@ -91,7 +91,7 @@ function get_threat(zone)
     end
     if zone.controls and zone.controls["enemy-base"] and zone.controls["enemy-base"].size then
       local threat = enemy_base_setting_to_threat(zone.controls["enemy-base"])
-      if Zone.is_biter_meteors_hazard(zone) then
+      if is_biter_meteors_hazard(zone) then
         return math.max(threat, 0.01)
       end
       return threat
