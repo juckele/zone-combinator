@@ -1,1 +1,1 @@
-zone_combinator.tint = {r=255, g=117, b=225}
+zone_combinator.tint = {r=117, g=117, b=225}
