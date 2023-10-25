@@ -62,12 +62,8 @@ end
 
 local icon_prefix = "virtual-signal/"
 
-function get_zone_signal(surface_index)
-  local zone = remote.call("space-exploration", "get_zone_from_surface_index", {surface_index = surface_index})
-  if not zone then return nil, nil end
-
+function get_zone_signal(zone)
   local zone_icon = remote.call("space-exploration", "get_zone_icon", {zone_index = zone.index})
-
   return zone.index, string.sub(zone_icon, string.len(icon_prefix) + 1, string.len(zone_icon))
 end
 
@@ -80,7 +76,7 @@ function update_zone_combinator(entity)
   local threat = remote.call("space-exploration", "threat_for_surface", {surface_index = surface_index})
   local robot_attrition = remote.call("space-exploration", "robot_attrition_for_surface", {surface_index = surface_index})
   local hazards = remote.call("space-exploration", "hazards_for_surface", {surface_index = surface_index})
-  local index, signal = get_zone_signal(surface_index)
+  local index, signal = get_zone_signal(zone)
   local plagued = table_contains(hazards, "plague-world")
   local life_support = plagued or (zone.type ~= "moon" and zone.type ~= "planet") -- this probably will change in some future version of SE where some planets/moons don't just happen to all have breathable atmospheres
   local waterless = table_contains(hazards, "waterless") or (zone.type ~= "moon" and zone.type ~= "planet")
