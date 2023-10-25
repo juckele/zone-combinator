@@ -22,6 +22,10 @@ function set_zone_combinator_signals(entity, params)
     table.insert(control_behavior_params, {index=index, signal={type="virtual", name="day-length"}, count=params.ticks_per_day})
     index = index + 1
   end
+  if params.solar then
+    table.insert(control_behavior_params, {index=index, signal={type="item", name="solar-panel"}, count=params.solar})
+    index = index + 1
+  end
   if params.threat then
     table.insert(control_behavior_params, {index=index, signal={type="item", name="artillery-targeting-remote"}, count=params.threat})
     index = index + 1
@@ -139,6 +143,96 @@ end
 -- END GET HAZARDS
 --------------------------------------------------------------
 
+--------------------------------------------------------------
+-- BEGIN GET SOLAR
+-- Remove when remote interface from SE is added.
+-- All code in this block derived from SE scripts/zone.lua.
+--------------------------------------------------------------
+function get_solar(zone)
+  log("get_solar")
+  log("get_solar on "..zone.name)
+
+  if zone.type == "anomaly" then
+    return 0
+  end
+
+  local star
+  local star_gravity_well = 0
+
+  if zone.type == "spaceship" then
+    star = zone.near_star
+    star_gravity_well = zone.star_gravity_well or 0
+  else
+    star = get_star_from_child(zone)
+    star_gravity_well = get_star_gravity_well(zone)
+  end
+
+  local light_percent = 0
+
+  if star then
+    light_percent = 1.6 * star_gravity_well / (star.star_gravity_well + 1)
+  end
+
+  if is_space(zone) then
+    if(zone.type == "orbit" and zone.parent and zone.parent.type == "star") then -- star
+      light_percent = light_percent * 10 -- x20
+    elseif zone.type == "asteroid-belt" then
+      light_percent = light_percent * 2.5 -- x5
+    else
+      light_percent = light_percent * 5 -- x10
+      if zone.parent and zone.parent.radius then
+        light_percent = light_percent * (1 - 0.1 * zone.parent.radius / 10000)
+      end
+    end
+    light_percent = light_percent + 0.01
+  else
+    if zone.radius then
+      light_percent = light_percent * (1 - 0.1 * zone.radius / 10000)
+      if zone.is_homeworld then
+        light_percent = 1
+      end
+    end
+  end
+
+  if zone.space_distortion and zone.space_distortion > 0 then
+
+    light_percent = light_percent * (1 - zone.space_distortion)
+
+    if zone.is_homeworld then
+      light_percent = 1
+    end
+  end
+  return light_percent
+end
+
+function get_star_from_child(zone)
+  log("get_star_from_child")
+  log("get_star_from_child on "..zone.name)
+  if zone.type == "star" then
+    return zone
+  elseif zone.parent then
+    return get_star_from_child(zone.parent)
+  end
+end
+
+function get_star_gravity_well(zone)
+  log("get_star_gravity_well")
+  log("get_star_gravity_well on "..zone.name)
+  if zone.type == "orbit" then
+    return get_star_gravity_well(zone.parent)
+  end
+  return zone.star_gravity_well or 0
+end
+
+function is_space(zone)
+  log("is_space")
+  log("is_space on "..zone.name)
+  return zone.type ~= "planet" and zone.type ~= "moon"
+end  
+--------------------------------------------------------------
+-- END GET SOLAR
+--------------------------------------------------------------
+
 
 function update_zone_combinator(entity)
   -- compute and set the values for the combinator
@@ -153,6 +247,9 @@ function update_zone_combinator(entity)
   local robot_attrition = remote.call("space-exploration", "robot_attrition_for_surface", {surface_index = surface_index})
   -- local hazards = remote.call("space-exploration", "hazards_for_surface", {surface_index = surface_index})
   local hazards = get_hazards(zone)
+  -- local solar = remote.call("space-exploration", "solar_for_surface", {surface_index = surface_index})
+  local solar = get_solar(zone)
+
   local index, signal = get_zone_signal(zone)
   local plagued = table_contains(hazards, "plague-world")
   local life_support = plagued or (zone.type ~= "moon" and zone.type ~= "planet") -- this probably will change in some future version of SE where some planets/moons don't just happen to all have breathable atmospheres
@@ -165,6 +262,7 @@ function update_zone_combinator(entity)
   set_zone_combinator_signals(entity, {
     radius = zone.radius,
     ticks_per_day = zone.ticks_per_day,
+    solar = math.floor(solar * 100),
     threat = math.floor(threat * 100),
     waterless = waterless,
     biter_meteors = table_contains(hazards, "biter-meteors"),
