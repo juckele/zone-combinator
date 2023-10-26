@@ -47,7 +47,6 @@ function set_zone_combinator_signals(entity, params)
     index = index + 1
   end
   if params.fragment_name then
-    local type = "item"
     if game.item_prototypes[params.fragment_name] then
       table.insert(control_behavior_params, {index=index, signal={type="item", name=params.fragment_name}, count=1})
       index = index + 1
@@ -57,6 +56,18 @@ function set_zone_combinator_signals(entity, params)
     table.insert(control_behavior_params, {index=index, signal={type="virtual", name="zc-robot-interference"}, count=params.robot_attrition})
     index = index + 1
   end
+  if params.resources then
+    for resource, amount in pairs(params.resources) do
+      if game.item_prototypes[resource] then
+        table.insert(control_behavior_params, {index=index, signal={type="item", name=resource}, count=amount})
+        index = index + 1
+      elseif game.fluid_prototypes[resource] then
+        table.insert(control_behavior_params, {index=index, signal={type="fluid", name=resource}, count=amount})
+	index = index + 1
+      end
+    end
+  end
+  
 
   control_behavior.parameters = control_behavior_params
 end
@@ -230,13 +241,28 @@ end
 -- END GET SOLAR
 --------------------------------------------------------------
 
+function get_resources(zone)
+  local resources = {}
+  if zone.controls then
+    for resource, control in pairs(zone.controls) do
+      if game.item_prototypes[resource] or game.fluid_prototypes[resource] then
+	local value = (control.frequency or 0) * (control.richness or 0) * (control.size or 0)
+        if value > 0 then
+	  resources[resource] = value * 10000
+	end
+      end
+    end
+  end
+
+  return resources
+end  
 
 function update_zone_combinator(entity)
   -- compute and set the values for the combinator
   local surface_index = entity.surface.index
   local zone = remote.call("space-exploration", "get_zone_from_surface_index", {surface_index = surface_index})
   if not zone then return end
-  log("zone_information:" .. serpent.block(zone))
+  log("zone_information:" .. serpent.block(zone, {maxlevel = 3}))
   
   -- TODO use remote calls when implemented:
   -- local threat = remote.call("space-exploration", "threat_for_surface", {surface_index = surface_index})
@@ -257,6 +283,8 @@ function update_zone_combinator(entity)
     fragment_name = zone.fragment_name
   end
 
+  local resources = get_resources(zone)
+
   set_zone_combinator_signals(entity, {
     radius = zone.radius,
     ticks_per_day = zone.ticks_per_day,
@@ -270,6 +298,7 @@ function update_zone_combinator(entity)
     index = index,
     signal = signal,
     life_support = life_support,
+    resources = resources,
   })
 end
 

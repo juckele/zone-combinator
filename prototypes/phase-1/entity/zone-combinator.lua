@@ -43,6 +43,6 @@ for direction_name, sprite_direction in pairs(entity_prototype.sprites) do
   table.insert(sprite_direction.layers, sprites[direction_name])
 end
 
-entity_prototype.item_slot_count = 10
+entity_prototype.item_slot_count = 30
 
 data:extend({entity_prototype})
