@@ -19,15 +19,15 @@ function set_zone_combinator_signals(entity, params)
     index = index + 1
   end
   if params.ticks_per_day then
-    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="day-length"}, count=params.ticks_per_day})
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="zc-day-length"}, count=params.ticks_per_day})
     index = index + 1
   end
   if params.solar then
-    table.insert(control_behavior_params, {index=index, signal={type="item", name="solar-panel"}, count=params.solar})
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="zc-solar"}, count=params.solar})
     index = index + 1
   end
   if params.threat then
-    table.insert(control_behavior_params, {index=index, signal={type="item", name="artillery-targeting-remote"}, count=params.threat})
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="zc-threat"}, count=params.threat})
     index = index + 1
   end
   if not params.waterless then
@@ -54,7 +54,7 @@ function set_zone_combinator_signals(entity, params)
     end
   end
   if params.robot_attrition then
-    table.insert(control_behavior_params, {index=index, signal={type="item", name="logistic-robot"}, count=params.robot_attrition})
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="zc-robot-interference"}, count=params.robot_attrition})
     index = index + 1
   end
 
