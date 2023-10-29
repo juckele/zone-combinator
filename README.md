@@ -1,6 +1,5 @@
 # Space Exploration Zone Combinator
-Combinator that outputs detailed information about the zone in which it is placed. Inspired by Baisius's discord suggestion.
-![](mod-portal/combinator-example.png)
+Combinator that outputs detailed information about the zone in which it is placed. Inspired by Baisius's discord [suggestion](https://discord.com/channels/419526714721566720/1161305206177402921).
 
 ## Features
 1. Introduces 4 new virtual signals: 'Day Length', 'Solar', 'Threat', and 'Robot Interference'.
