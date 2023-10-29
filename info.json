@@ -1,9 +1,9 @@
 {
-  "name": "zone-combinator",
-  "version": "0.0.1",
+  "name": "se-zone-combinator",
+  "version": "1.0.0",
   "title": "Space Exploration Zone Combinator",
-  "author": "test447",
-  "contact": "https://github.com/daviscook477/zone-combinator/issues",
+  "author": "berggen",
+  "contact": "https://github.com/juckele/zone-combinator/issues",
   "factorio_version": "1.1",
   "dependencies": [
     "base",

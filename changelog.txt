@@ -1,6 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2023-10-28
+  Changes:
+    - Cleaned up version with all intended functionality implemented.
+    - Added 4 new virtual signals for use by the zone combinator.
+---------------------------------------------------------------------------------------------------
 Version: 0.0.1
 Date: 2023-10-10
   Changes:
     - Initial beta release
-    - Adds a combinator that outputs the position (X, Y) and surface (S) on which it's placed.
+    - Adds a combinator that outputs the zone details on which it's placed.
