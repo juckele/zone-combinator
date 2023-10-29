@@ -100,7 +100,7 @@ function update_zone_combinator(entity)
   local surface_index = entity.surface.index
   local zone = remote.call("space-exploration", "get_zone_from_surface_index", {surface_index = surface_index})
   if not zone then return end
-  log("zone_information:" .. serpent.block(zone, {maxlevel = 3}))
+  -- log("zone_information:" .. serpent.block(zone, {maxlevel = 3}))
 
   local threat = remote.call("space-exploration", "threat_for_surface", {surface_index = surface_index})
   local robot_attrition = remote.call("space-exploration", "robot_attrition_for_surface", {surface_index = surface_index})
