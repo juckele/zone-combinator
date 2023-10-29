@@ -10,6 +10,14 @@ function set_zone_combinator_signals(entity, params)
 
   local control_behavior_params = {}
   local index = 1
+  if params.x_pos then
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="signal-X"}, count=params.x_pos})
+    index = index + 1
+  end
+  if params.y_pos then
+    table.insert(control_behavior_params, {index=index, signal={type="virtual", name="signal-Y"}, count=params.y_pos})
+    index = index + 1
+  end
   if params.index and params.signal then
     table.insert(control_behavior_params, {index=index, signal={type="virtual", name=params.signal}, count=params.index})
     index = index + 1
@@ -67,7 +75,6 @@ function set_zone_combinator_signals(entity, params)
       end
     end
   end
-  
 
   control_behavior.parameters = control_behavior_params
 end
@@ -119,6 +126,8 @@ function update_zone_combinator(entity)
   local resources = get_resources(zone)
 
   set_zone_combinator_signals(entity, {
+    x_pos = entity.position.x,
+    y_pos = entity.position.y,
     radius = zone.radius,
     ticks_per_day = zone.ticks_per_day,
     solar = math.floor(solar * 100),

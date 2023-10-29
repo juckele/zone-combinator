@@ -4,6 +4,7 @@ Combinator that outputs detailed information about the zone in which it is place
 ## Features
 1. Introduces 4 new virtual signals: 'Day Length', 'Solar', 'Threat', and 'Robot Interference'.
 1. Introduces a special 'zone combinator' that's effectively a constant combinator that is automatically built with a number signals describing the zone.
+    1. X and Y position of the combinator when placed.
     1. Zone id, set on a channel corresponding to the zone type.
     1. Radius, set on the 'Radius' signal.
     1. Day length, set on the 'Day Length' signal and measured in ticks.
